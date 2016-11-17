@@ -1054,21 +1054,31 @@ func (p *jsonOutputNode) SetXID(xid string) {
 // ToJSON converts the internal subgraph object to JSON format which is then\
 // sent to the HTTP client.
 func (sg *SubGraph) ToJSON(l *Latency) ([]byte, error) {
-	var seedNode *jsonOutputNode
-	n := seedNode.New(sg.Attr)
-	ul := sg.Result[0]
-	if sg.Params.GetUID || sg.Params.isDebug {
-		n.SetUID(ul.Get(0))
+	//var seedNode *jsonOutputNode
+	res := make(map[string][]interface{})
+	//n := seedNode.New("_root_")
+	for i := 0; i < len(sg.Result); i++ {
+		var childNode *jsonOutputNode
+		n1 := childNode.New(sg.Attr)
+		ul := sg.Result[i]
+		if sg.Params.GetUID || sg.Params.isDebug {
+			n1.SetUID(ul.Get(0))
+		}
+
+		fmt.Println(sg.Attr)
+		if err := sg.preTraverse(ul.Get(0), n1); err != nil {
+			return nil, err
+		}
+		//n.AddChild(sg.Attr, n1)
+		res[sg.Attr] = append(res[sg.Attr], n1.(*jsonOutputNode).data)
 	}
 
-	if err := sg.preTraverse(ul.Get(0), n); err != nil {
-		return nil, err
-	}
-	root := map[string]interface{}{
-		sg.Attr: []map[string]interface{}{n.(*jsonOutputNode).data},
-	}
+	fmt.Println(res)
+	//	root := map[string]interface{}{
+	//		"_root_": []map[string]interface{}{n.(*jsonOutputNode).data},
+	//	}
 	if sg.Params.isDebug {
-		root["server_latency"] = l.ToMap()
+		res["server_latency"] = []interface{}{l.ToMap()}
 	}
-	return json.Marshal(root)
+	return json.Marshal(res)
 }

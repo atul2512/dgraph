@@ -121,8 +121,11 @@ func TestWithinPoint(t *testing.T) {
 	}
 
 	mp := runQuery(t, gq)
-	expected := map[string]interface{}{"me": []interface{}{map[string]interface{}{"name": "Googleplex"}}}
-	require.Equal(t, expected, mp)
+	fmt.Println(mp)
+	expected := []string{"Googleplex"}
+	require.Equal(t, 1, len(mp.(map[string]interface{})["me"].([]interface{})))
+	require.Contains(t, expected,
+		mp.(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
 }
 
 func TestWithinPolygon(t *testing.T) {
@@ -142,12 +145,13 @@ func TestWithinPolygon(t *testing.T) {
 	}
 
 	mp := runQuery(t, gq)
+	fmt.Println(mp)
 	expected := []string{"Googleplex", "Shoreline Amphitheater"}
-	require.Equal(t, 2, len(mp.([]interface{})))
+	require.Equal(t, 2, len(mp.(map[string]interface{})["me"].([]interface{})))
 	require.Contains(t, expected,
-		mp.([]interface{})[0].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[1].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[1].(map[string]interface{})["name"].(string))
 
 }
 
@@ -168,11 +172,11 @@ func TestContainsPoint(t *testing.T) {
 
 	mp := runQuery(t, gq)
 	expected := []string{"Mountain View", "SF Bay area"}
-	require.Equal(t, 2, len(mp.([]interface{})))
+	require.Equal(t, 2, len(mp.(map[string]interface{})["me"].([]interface{})))
 	require.Contains(t, expected,
-		mp.([]interface{})[0].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[1].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[1].(map[string]interface{})["name"].(string))
 
 }
 
@@ -190,11 +194,11 @@ func TestNearPoint(t *testing.T) {
 
 	mp := runQuery(t, gq)
 	expected := []string{"Googleplex", "Shoreline Amphitheater"}
-	require.Equal(t, 2, len(mp.([]interface{})))
+	require.Equal(t, 2, len(mp.(map[string]interface{})["me"].([]interface{})))
 	require.Contains(t, expected,
-		mp.([]interface{})[0].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[1].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[1].(map[string]interface{})["name"].(string))
 
 }
 
@@ -218,15 +222,16 @@ func TestIntersectsPolygon1(t *testing.T) {
 
 	mp := runQuery(t, gq)
 	expected := []string{"Googleplex", "Shoreline Amphitheater", "SF Bay area", "Mountain View"}
-	require.Equal(t, 4, len(mp.([]interface{})))
+	require.Equal(t, 4, len(mp.(map[string]interface{})["me"].([]interface{})))
 	require.Contains(t, expected,
-		mp.([]interface{})[0].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[1].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[1].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[2].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[2].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[3].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[3].(map[string]interface{})["name"].(string))
+
 }
 
 func TestIntersectsPolygon2(t *testing.T) {
@@ -249,17 +254,18 @@ func TestIntersectsPolygon2(t *testing.T) {
 
 	mp := runQuery(t, gq)
 	expected := []string{"Googleplex", "Shoreline Amphitheater", "SF Bay area", "Mountain View", "San Carlos", "San Carlos Airport"}
-	require.Equal(t, 6, len(mp.([]interface{})))
+	require.Equal(t, 6, len(mp.(map[string]interface{})["me"].([]interface{})))
 	require.Contains(t, expected,
-		mp.([]interface{})[0].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[1].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[1].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[2].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[2].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[3].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[3].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[4].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[4].(map[string]interface{})["name"].(string))
 	require.Contains(t, expected,
-		mp.([]interface{})[5].(map[string]interface{})["me"].([]interface{})[0].(map[string]interface{})["name"].(string))
+		mp.(map[string]interface{})["me"].([]interface{})[5].(map[string]interface{})["name"].(string))
+
 }

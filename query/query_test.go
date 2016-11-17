@@ -292,7 +292,7 @@ func TestDebug1(t *testing.T) {
 
 	latency := mp["server_latency"]
 	require.NotNil(t, latency)
-	_, ok := latency.(map[string]interface{})
+	_, ok := latency.([]interface{})
 	require.True(t, ok)
 }
 
