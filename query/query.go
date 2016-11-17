@@ -819,6 +819,17 @@ func runFilter(ctx context.Context, destUIDs *algo.UIDList,
 		}
 	}
 
+	if filter.Op == "&" {
+		// For intersect operator, we process the children serially.
+		for _, c := range filter.Child {
+			var err error
+			if destUIDs, err = runFilter(ctx, destUIDs, c); err != nil {
+				return nil, err
+			}
+		}
+		return destUIDs, nil
+	}
+
 	// For now, we only handle AND and OR.
 	if filter.Op != "|" {
 		return destUIDs, x.Errorf("Unknown operator %v", filter.Op)
@@ -1051,12 +1062,10 @@ func (p *jsonOutputNode) SetXID(xid string) {
 	p.data["_xid_"] = xid
 }
 
-// ToJSON converts the internal subgraph object to JSON format which is then\
+// ToJSON converts the internal subgraph object to JSON format which is then
 // sent to the HTTP client.
 func (sg *SubGraph) ToJSON(l *Latency) ([]byte, error) {
-	//var seedNode *jsonOutputNode
 	res := make(map[string][]interface{})
-	//n := seedNode.New("_root_")
 	for i := 0; i < len(sg.Result); i++ {
 		var childNode *jsonOutputNode
 		n1 := childNode.New(sg.Attr)
@@ -1069,14 +1078,9 @@ func (sg *SubGraph) ToJSON(l *Latency) ([]byte, error) {
 		if err := sg.preTraverse(ul.Get(0), n1); err != nil {
 			return nil, err
 		}
-		//n.AddChild(sg.Attr, n1)
 		res[sg.Attr] = append(res[sg.Attr], n1.(*jsonOutputNode).data)
 	}
 
-	fmt.Println(res)
-	//	root := map[string]interface{}{
-	//		"_root_": []map[string]interface{}{n.(*jsonOutputNode).data},
-	//	}
 	if sg.Params.isDebug {
 		res["server_latency"] = []interface{}{l.ToMap()}
 	}
